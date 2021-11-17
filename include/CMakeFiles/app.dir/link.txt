@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/app.dir/home/mohamadreza/Desktop/Banking-System/src/main.cpp.o CMakeFiles/app.dir/home/mohamadreza/Desktop/Banking-System/src/functions.cpp.o CMakeFiles/app.dir/home/mohamadreza/Desktop/Banking-System/src/customer.cpp.o CMakeFiles/app.dir/home/mohamadreza/Desktop/Banking-System/src/banktransaction.cpp.o  -o app 

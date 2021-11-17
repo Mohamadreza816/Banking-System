@@ -1,0 +1,3 @@
+/home/mohamadreza/Desktop/Banking-System/include/CMakeFiles/rebuild_cache.dir
+/home/mohamadreza/Desktop/Banking-System/include/CMakeFiles/edit_cache.dir
+/home/mohamadreza/Desktop/Banking-System/include/CMakeFiles/app.dir

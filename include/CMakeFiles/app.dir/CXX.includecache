@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mohamadreza/Desktop/Banking-System/header/banktransaction.hpp
+iostream
+-
+string
+-
+ctime
+-
+
+/home/mohamadreza/Desktop/Banking-System/header/customer.hpp
+iostream
+-
+vector
+-
+stdbool.h
+-
+banktransaction.hpp
+/home/mohamadreza/Desktop/Banking-System/header/banktransaction.hpp
+
+/home/mohamadreza/Desktop/Banking-System/header/functions.hpp
+customer.hpp
+/home/mohamadreza/Desktop/Banking-System/header/customer.hpp
+banktransaction.hpp
+/home/mohamadreza/Desktop/Banking-System/header/banktransaction.hpp
+iostream
+-
+vector
+-
+string
+-
+ctime
+-
+
+/home/mohamadreza/Desktop/Banking-System/src/functions.cpp
+../header/functions.hpp
+/home/mohamadreza/Desktop/Banking-System/header/functions.hpp
+
