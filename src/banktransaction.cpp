@@ -10,14 +10,36 @@ banktransaction::banktransaction(int amount)
     day = ltm->tm_mday;
     tr = amount;
 }
-//constructor
+//end of constructor
+//-------------------------------------------
+//set_source method
+void banktransaction::set_source(string a)
+{
+    source = a;
+}
+//end of set_source method
+//-------------------------------------------
+//set_destination
+void banktransaction::set_destination(string a)
+{
+    destination = a;
+}
+//end of set_destination
 //-------------------------------------------
 //set_status
-void banktransaction::set_status(int e_profit)
+void banktransaction::set_status(int e_arg)
 {
-    //e_profit = enum profit
-    status = e_profit;
+    //e_parg = enum argumant
+    status = e_arg;
 } 
+//end of set_status
+//-------------------------------------------
+//set_loan_status methos
+void banktransaction::set_loan_status(int e_arg)
+{
+    loan_status = e_arg;
+}
+//end of loan status
 //-------------------------------------------
 //get_day method
 int banktransaction::get_day()
@@ -41,7 +63,7 @@ int banktransaction ::get_year()
 //end of get_year method
 //-------------------------------------------
 //banktransaction method
-long long int banktransaction::get_tr()
+int banktransaction::get_tr()
 {
     return tr;
 }
@@ -53,4 +75,25 @@ int banktransaction::get_status()
     return status;
 }
 //end of get_status
+//-------------------------------------------
+//get_loan_status method
+int banktransaction::get_loan_status()
+{
+    return loan_status;
+}
+// end of get_loan_status method
+//-------------------------------------------
+//get_source method
+string banktransaction::get_source()
+{
+    return source;
+}
+//end of get_source method
+//-------------------------------------------
+//get_destination
+string banktransaction::get_destination()
+{
+    return destination;
+}
+//end of get_destination
 //-------------------------------------------
