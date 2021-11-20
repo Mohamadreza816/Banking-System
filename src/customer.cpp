@@ -101,7 +101,7 @@ void customer::get_ip()
 {
     for (auto A : this->ip)
     {
-        cout << "Active ip: " << A << endl;
+        cout << "Active IP: " << A << endl;
     }
 }
 
@@ -121,7 +121,7 @@ string customer::get_expiration_date()
 // end of getters
 //--------------------------------
 //transaction method
-bool customer::transaction(int amount, int status, vector<customer> &v_customer)
+bool customer::transaction(int amount, int status, vector<customer> &v_customer, vector<banktransaction>&AT)
 {
     //status == 0 --------->deposit
     //status == 1 --------->whitdraw
@@ -158,19 +158,50 @@ bool customer::transaction(int amount, int status, vector<customer> &v_customer)
         }
         if (status == DEPOSIT)
         {
-            stock = stock + amount;
-            cout << "Deposit " << amount << endl;
+            if (this->get_borrow() < 0)
+            {
+                int sum = this->get_borrow() + amount;
+                if (sum < 0)
+                {
+                    this->set_borrow(sum);
+                }
+                if (sum == 0)
+                {
+                    banktransaction temp{sum};
+                    temp.set_loan_status(NOBORROW);
+                    temp.set_source(this->get_username());
+                    AT.push_back(temp);
+                    this->save_transactions(AT);
+                    this->set_borrow(0);
+                }
+                if (sum > 0)
+                {
+                    this->set_borrow(0);
+                    banktransaction temp{sum};
+                    temp.set_loan_status(NOBORROW);
+                    temp.set_source(this->get_username());
+                    AT.push_back(temp);
+                    this->save_transactions(AT);
+                    stock = stock + sum;
+                    cout << "Deposit " << sum << " Toman" << endl;
+                }
+            }
+            else
+            {
+                stock = stock + amount;
+                cout << "Deposit " << amount << " Toman" << endl;
+            }
         }
         if (status == WITHDRAW)
         {
             if (this->get_borrow() == 0) //is this username indebted to the bank?
             {
-                if (stock >= amount)
+                if (stock >= (-amount))
                 {
-                    if (balance_of_bank >= amount) //is balance of bank enough for give money to the customer?
+                    if (balance_of_bank >= (-amount)) //is balance of bank enough for give money to the customer?
                     {
                         stock = stock + amount;
-                        cout << "withdraw " << amount << endl;
+                        cout << "withdraw " << -amount << " Toman" << endl;
                         return true;
                     }
                     else
@@ -306,7 +337,7 @@ bool customer::take_profites(vector<banktransaction> &AT, vector<customer> &v_cu
         {
             throw invalid_argument("This user can not take profit!");
         }
-        this->transaction(sum, DEPOSIT, v_customer); //call deposit method
+        this->transaction(sum, DEPOSIT, v_customer,AT); //call deposit method
         banktransaction temp(sum);                   //make new transaction obj
         temp.set_source(this->get_username());       //save source account name
         temp.set_status(PROFIT);                     //use for checking date and add profit next time

@@ -53,7 +53,7 @@ public:
     //getters
 
     //other methods
-    bool transaction(int, int, vector<customer> &);
+    bool transaction(int, int, vector<customer> &, vector<banktransaction>&) ;
     bool checkIP(string);
     void save_transactions(vector<banktransaction> &);
     bool take_profites(vector<banktransaction> &, vector<customer> &);

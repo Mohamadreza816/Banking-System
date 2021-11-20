@@ -3,7 +3,7 @@ using namespace std;
 //message function
 void message()
 {
-     cout << "------------------------" << endl;
+     cout << "========================" << endl;
     cout << "1-Create account" << endl;
     cout << "------------------------" << endl;
     cout << "2-Deposit" << endl;
@@ -58,7 +58,12 @@ bool command(string request, vector<customer> &v_customer, vector<banktransactio
         add_ip(request, v_customer);
         return true;
     }
-    if ((request.substr(0, pos) == "deposit") || (request.substr(0, pos) == "withdraw")) //deposit and withdraw
+    if ((request.substr(0, pos) == "deposit")) //deposit
+    {
+        customer_transaction(request, v_customer, AT);
+        return true;
+    }
+    if ((request.substr(0, pos) == "withdraw")) //withdraw
     {
         customer_transaction(request, v_customer, AT);
         return true;
@@ -88,7 +93,10 @@ bool command(string request, vector<customer> &v_customer, vector<banktransactio
         pay_loan(request.substr(pos + 1), v_customer, AT);
         return true;
     }
-    show(request,v_customer,AT);
+    if (show(request, v_customer, AT))
+    {
+        return true;
+    }
     cout << "input command is incorrect!!!" << endl;
     return false;
 }
@@ -261,6 +269,7 @@ bool add_ip(string request, vector<customer> &v_customer)
                 //if input ip was correct then we add that to ip list
                 if (check_ip(request) == true)
                 {
+                    cout << request << " was added successfully" << endl;
                     v_customer[i].set_ip(request);
                 }
                 else
@@ -355,7 +364,7 @@ void customer_transaction(string request, vector<customer> &v_customer, vector<b
 
                 if (status == WITHDRAW)
                 {
-                    if (v_customer[i].transaction(-money, WITHDRAW, v_customer))
+                    if (v_customer[i].transaction(-money, WITHDRAW, v_customer,AT))
                     {
                         banktransaction temp(-money);                  // make new transaction
                         temp.set_source(v_customer[i].get_username()); //save source account name
@@ -365,7 +374,7 @@ void customer_transaction(string request, vector<customer> &v_customer, vector<b
                 }
                 else if (status == DEPOSIT)
                 {
-                    if (v_customer[i].transaction(money, DEPOSIT, v_customer))
+                    if (v_customer[i].transaction(money, DEPOSIT, v_customer,AT))
                     {
                         banktransaction temp(money);                   // make new transaction
                         temp.set_source(v_customer[i].get_username()); //save source account name
@@ -423,7 +432,7 @@ void transfer(string request, vector<customer> &v_customer, vector<banktransacti
         pos = request.find(':');
         int j = 0;
         check = 0;
-        for (j = 0; j < v_customer.size(); j++)
+        for (; j < v_customer.size(); j++)
         {
             if (v_customer[j].get_username() == request.substr(0, pos))
             {
@@ -432,20 +441,24 @@ void transfer(string request, vector<customer> &v_customer, vector<banktransacti
                 check = 1;
                 break;
             }
-            if (check == 0)
-            {
-                throw invalid_argument("This username dosen't exists!");
-            }
+        }
+        if (check == 0)
+        {
+            throw invalid_argument("This username dosen't exists!");
         }
         int money = stoi(array[3]);
-        if (v_customer[i].transaction(-money, WITHDRAW, v_customer))
+        if (v_customer[i].transaction(-money, WITHDRAW, v_customer,AT))
         {
             banktransaction temp(-money);                  // make new transaction
             temp.set_source(v_customer[i].get_username()); //save source account name
             AT.push_back(temp);                            //save withdraw transactions in bank list
             v_customer[i].save_transactions(AT);           //save number of vector<banktransaction> in transaction list customer
+        }else
+        {
+            throw invalid_argument("You can't transfer!");
         }
-        v_customer[j].transaction(money, DEPOSIT, v_customer);
+        
+        v_customer[j].transaction(money, DEPOSIT, v_customer, AT);
         banktransaction temp(money);
         temp.set_destination(v_customer[j].get_username()); //save destination account name
         AT.push_back(temp);                                 //save deposit transactions in bank list
@@ -484,7 +497,7 @@ void renewal(string request, vector<customer> &v_customer, vector<banktransactio
         }
         if (v_customer[i].checkIP(request) == true) //check input ip in the ip list for the customer
         {
-            if (v_customer[i].transaction(-10000, WITHDRAW, v_customer))
+            if (v_customer[i].transaction(-10000, WITHDRAW, v_customer,AT))
             {
                 banktransaction temp(-10000);                  // make new transaction
                 temp.set_source(v_customer[i].get_username()); //save source account name
@@ -596,17 +609,16 @@ void get_loan(string request, vector<customer> &v_customer, vector<banktransacti
                         bank_balance = item.get_stock() + item.get_borrow() + bank_balance;
                     }
                 }
-                if (bank_balance > amount_loan)
+                if (bank_balance >= amount_loan)
                 {
+                    banktransaction temp(-amount_loan);                          // make new banktransaction obj
+                    temp.set_source(v_customer[i].get_username());               //save source account name
+                    temp.set_loan_status(BORROW);                                //get loan to the customer
+                    AT.push_back(temp);                                          //save deposit transactions in bank list
+                    v_customer[i].save_transactions(AT);                         //save number of vector<banktransaction> in transaction list customer
+                    cout << v_customer[i].get_username() << " get loan " << amount_loan << endl;
                     amount_loan = -((amount_loan * 0.2) + amount_loan);
                     v_customer[i].set_borrow(amount_loan);
-                    v_customer[i].transaction(-amount_loan, DEPOSIT, v_customer); //deposit amoutn of loan in accuont
-                    banktransaction temp(-amount_loan);                           // make new banktransaction obj
-                    temp.set_source(v_customer[i].get_username());                //save source account name
-                    temp.set_loan_status(BORROW);                                 //get loan to the customer
-                    AT.push_back(temp);                                           //save deposit transactions in bank list
-                    v_customer[i].save_transactions(AT);                          //save number of vector<banktransaction> in transaction list customer
-                    cout << v_customer[i].get_username() << "get loan" << -amount_loan << endl;
                 }
                 else
                 {
@@ -665,7 +677,7 @@ void pay_loan(string request, vector<customer> &v_customer, vector<banktransacti
             temp.set_loan_status(NOBORROW);                //pay loan
             AT.push_back(temp);                            //save deposit transactions in bank list
             v_customer[i].save_transactions(AT);           //save number of vector<banktransaction> in transaction list customer
-            cout << "You have no debt to the bank" << endl;
+            cout << "You paied loan successfully" << endl;
         }
         //payment is less than borrow
         if (sum < 0)
@@ -682,12 +694,13 @@ void pay_loan(string request, vector<customer> &v_customer, vector<banktransacti
         if (sum > 0)
         {
             v_customer[i].set_borrow(0);
+            v_customer[i].transaction(sum,DEPOSIT,v_customer,AT);
             banktransaction temp{money};                   //make new banktransaction obj
             temp.set_source(v_customer[i].get_username()); //save source account name
             temp.set_loan_status(NOBORROW);                //pay loan
             AT.push_back(temp);                            //save deposit transactions in bank list
             v_customer[i].save_transactions(AT);           //save number of vector<banktransaction> in transaction list customer
-            cout << "You have no debt to the bank" << endl;
+            cout << "You paied loan successfully" << endl;
         }
     }
     catch (const invalid_argument &e)
@@ -729,11 +742,17 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
                 if (item.get_username() == request)
                 {
                     cout << "Username: " << item.get_username() << endl;
+                    cout << "------------------------" << endl;
                     item.get_ip();
+                    cout << "------------------------" << endl;
                     cout << "Card Number: " << item.get_card_num() << endl;
-                    cout << "Balance: " << item.get_stock() << endl;
-                    cout << "The amount of debt to the bank: " << item.get_borrow() << endl;
+                    cout << "------------------------" << endl;
+                    cout << "Balance: " << item.get_stock() << " Toman" << endl;
+                    cout << "------------------------" << endl;
+                    cout << "The amount of debt to the bank: " << -(item.get_borrow()) << " Toman" << endl;
+                    cout << "------------------------" << endl;
                     cout << "Account opening date: " << item.get_opening_date() << endl;
+                    cout << "------------------------" << endl;
                     cout << "Account expiration date: " << item.get_expiration_date() << endl;
                     return true;
                 }
@@ -750,8 +769,8 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
                     cout << "Username: " << item.get_username() << endl;
                     item.get_ip();
                     cout << "Card Number: " << item.get_card_num() << endl;
-                    cout << "Balance: " << item.get_stock() << endl;
-                    cout << "The amount of debt to the bank: " << item.get_borrow() << endl;
+                    cout << "Balance: " << item.get_stock() << " Toman" << endl;
+                    cout << "The amount of debt to the bank: " << -(item.get_borrow()) << " Toman" << endl;
                     cout << "Account opening date: " << item.get_opening_date() << endl;
                     cout << "Account expiration date: " << item.get_expiration_date() << endl;
                     return true;
@@ -769,8 +788,8 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
                     cout << "Username: " << item.get_username() << endl;
                     item.get_ip();
                     cout << "Card Number: " << item.get_card_num() << endl;
-                    cout << "Balance: " << item.get_stock() << endl;
-                    cout << "The amount of debt to the bank: " << item.get_borrow() << endl;
+                    cout << "Balance: " << item.get_stock() << " Toman" << endl;
+                    cout << "The amount of debt to the bank: " << -(item.get_borrow()) << " Toman" << endl;
                     cout << "Account opening date: " << item.get_opening_date() << endl;
                     cout << "Account expiration date: " << item.get_expiration_date() << endl;
                     return true;
@@ -790,9 +809,9 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
                 pure_balance = item.get_stock() + pure_balance;
                 loan = item.get_borrow() + loan;
             }
-            cout << "current balance: " << current_balance << endl;
-            cout << "pure balance: " << pure_balance << endl;
-            cout << "loan amount: " << loan << endl;
+            cout << "current balance: " << current_balance << " Toman" << endl;
+            cout << "pure balance: " << pure_balance << " Toman" << endl;
+            cout << "loan amount: " << loan << " Toman" << endl;
         }
         default:
             break;

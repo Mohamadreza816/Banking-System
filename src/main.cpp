@@ -10,11 +10,13 @@ int main()
     vector<customer> cus;                   //list of customer class.
     message();                              //show abilty og program
     getline(cin, request);
+    cout << "========================" << endl;
     while (request != "exit")
     {
         command(request, cus, alltransaction);
         message();
         getline(cin, request);
+        cout << "========================" << endl;
     }
     cout << "*********************" << endl;
     cout << "End of program!" << endl;
