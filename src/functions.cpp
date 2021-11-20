@@ -797,7 +797,7 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
             }
             throw invalid_argument("This Cardnumber dosen't exists!");
         }
-        case 3:
+        case 3://bank
         {
             cout << "number of customer: " << v_customer[0].get_count() << endl;
             int current_balance{0};
@@ -811,7 +811,8 @@ bool show(string request, vector<customer> &v_customer, vector<banktransaction> 
             }
             cout << "current balance: " << current_balance << " Toman" << endl;
             cout << "pure balance: " << pure_balance << " Toman" << endl;
-            cout << "loan amount: " << loan << " Toman" << endl;
+            cout << "loan amount: " << -loan << " Toman" << endl;
+            return true;
         }
         default:
             break;

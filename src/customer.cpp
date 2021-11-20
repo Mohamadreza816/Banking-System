@@ -247,7 +247,7 @@ bool customer::checkIP(string ip_a)
 void customer::save_transactions(vector<banktransaction> &AT) //AT = all transaction
 {
     //push element number of AT in the customer::transactions(vector)
-    transactions.push_back(AT.size());
+    transactions.push_back(AT.size() - 1);
 }
 //end of save transactions
 //--------------------------------
@@ -288,7 +288,7 @@ bool customer::take_profites(vector<banktransaction> &AT, vector<customer> &v_cu
                     YEAR = (ltm->tm_year + 1900) - AT[transactions[j]].get_year(); //calculate tear from current year
                     if (YEAR == 0)
                     {
-                        MONTH = 1 + ltm->tm_mon - AT[transactions[j]].get_month(); //calculate month from current month
+                        MONTH = (1 + ltm->tm_mon) - AT[transactions[j]].get_month(); //calculate month from current month
                         if (MONTH < 0)
                         {
                             MONTH += 12;
@@ -304,7 +304,7 @@ bool customer::take_profites(vector<banktransaction> &AT, vector<customer> &v_cu
         DAY = 0;
         MONTH = 0;
         YEAR = 0;
-        for (int j = 0; j < transactions.size(); j++) //check last profit
+        for (int j = 0; j < this->transactions.size(); j++) //check last profit
         {
             DAY = (ltm->tm_mday) - AT[transactions[j]].get_day(); //calculate day from current day
             if (DAY < 0)                                          //for correct in number---> 5 - 29 = -24 but in date-----> 5 - 29 = 5
@@ -316,7 +316,7 @@ bool customer::take_profites(vector<banktransaction> &AT, vector<customer> &v_cu
                 YEAR = (ltm->tm_year + 1900) - AT[transactions[j]].get_year(); //calculate tear from current year
                 if (YEAR == 0)
                 {
-                    MONTH = 1 + ltm->tm_mon - AT[transactions[j]].get_month(); //calculate month from current month
+                    MONTH = (1 + ltm->tm_mon) - AT[transactions[j]].get_month(); //calculate month from current month
                     if (MONTH < 0)
                     {
                         MONTH += 12;

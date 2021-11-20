@@ -38,16 +38,6 @@ string
 ctime
 -
 
-/home/mohamadreza/Desktop/Banking-System/src/customer.cpp
-../header/customer.hpp
-/home/mohamadreza/Desktop/Banking-System/header/customer.hpp
-ctime
--
-stdexcept
--
-string
--
-
 /home/mohamadreza/Desktop/Banking-System/src/functions.cpp
 ../header/functions.hpp
 /home/mohamadreza/Desktop/Banking-System/header/functions.hpp
